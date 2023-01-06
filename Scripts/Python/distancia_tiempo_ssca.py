@@ -4,7 +4,8 @@ import pyproj
 from math import dist
 import requests
 import warnings
-warnings.filterwarnings("ignore")
+# warnings.filterwarnings("ignore")
+import time
 
 
 class descarga_dist_btw_points:
@@ -23,6 +24,7 @@ class descarga_dist_btw_points:
       self.Dataset = 'WorldBank'
       self.Tabla = 'directions'
       self.ETC = ETC
+      self.timeout = time.time() + 10   # 10 seconds from now
 
     def elevation_points(self):
       headers = {
@@ -59,11 +61,15 @@ class descarga_dist_btw_points:
       self.origen = str(self.from_school_long) + ',' +  str(self.from_school_lat) 
       self.desti = str(self.to_school_long)+ ',' +  str(self.to_school_lat)
       while True:
-        try:
-          self.gjson = '{"type":"LineString",' + self.printer_.split(',"geometry":{')[1].split(',"type":"LineString"}}]')[0] + '}'
-          break
-        except IndexError:
-          print('its getting again the geojson')
+        test = 0
+        if test == 10 or time.time() > self.timeout:
+          try:
+            self.gjson = '{"type":"LineString",' + self.printer_.split(',"geometry":{')[1].split(',"type":"LineString"}}]')[0] + '}'
+            break
+          except IndexError:
+            print('its getting again the geojson')
+
+
       self.ep = self.gjson.split(',[')[-1].split(']')[0]
       if '[[' in self.ep:
         self.end_point = self.ep.split('[[')[-1]
@@ -130,7 +136,7 @@ class descarga_dist_btw_points:
 
       errors = bq_client.insert_rows_json(self.table_id, self.rows_to_insert)  # Make an API request.
       if errors == []:
-          print("New rows have been added.")
+          pass #print("New rows have been added.")
       else:
           print("Encountered errors while inserting rows: {}".format(errors))
       return errors 
