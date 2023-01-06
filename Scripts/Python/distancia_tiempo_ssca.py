@@ -77,8 +77,8 @@ class descarga_dist_btw_points:
       proj_3035 = CRS("EPSG:3035")
       
 
-      x1, y1 = pyproj.transform(proj_4326, proj_3035, long_dest, lat_dest)
-      x2, y2 = pyproj.transform(proj_4326, proj_3035, long_ep, lat_ep)
+      x1, y1 = pyproj.transform(proj_4326, proj_3035, self.long_dest, self.lat_dest)
+      x2, y2 = pyproj.transform(proj_4326, proj_3035, self.long_ep, self.lat_ep)
 
       Punto1 = (x1, y1 )
       Punto2 = (x2, y2)
@@ -87,7 +87,7 @@ class descarga_dist_btw_points:
   #   duracion, distancia_end_point_destino, , id_to,  desti  , end_point , distancia  , geojson
 
       return [self.id_from , self.origen, self.id_to, self.desti, self.end_point, 
-              self.distancia,self.duracion,self.dist_desti_epd,  self.geojson  ]
+              self.distancia,self.duracion,self.dist_desti_epd,  self.geojson , self.printer_ ]
 
 ######################################################
     def streaming_load_bq(self):
@@ -107,7 +107,8 @@ class descarga_dist_btw_points:
            "distancia": str(self.data_school[5]), 
             "duracion": str(self.data_school[6]), 
            "distancia_destino_end_point": str(self.data_school[7]), 
-            "geojson_text": str(self.data_school[8]) 
+            "geojson_text": str(self.data_school[8]) ,
+           "json": str(self.data_school[9]) 
            }, 
           ]
 
