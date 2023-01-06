@@ -3,7 +3,8 @@ from pyproj import CRS
 import pyproj
 from math import dist
 import requests
-
+import warnings
+warnings.filterwarnings("ignore")
 
 
 class descarga_dist_btw_points:
@@ -117,5 +118,5 @@ class descarga_dist_btw_points:
           print("New rows have been added.")
       else:
           print("Encountered errors while inserting rows: {}".format(errors))
-      return [errors,  self.rows_to_insert ] 
+      return [errors] 
 
