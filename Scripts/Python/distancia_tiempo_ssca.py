@@ -10,7 +10,8 @@ warnings.filterwarnings("ignore")
 class descarga_dist_btw_points:
   #conductor
     def __init__(self,api_key = "", id_from= "" ,  from_school_long=None,
-                 from_school_lat =None , id_to= "",  to_school_long=None, to_school_lat=None, ETC = "" ):  
+                 from_school_lat =None , id_to= "", 
+		 to_school_long=None, to_school_lat=None, ETC = "" ):  
       self.api_key = api_key
       self.id_from = id_from
       self.from_school_long = from_school_long
@@ -112,7 +113,7 @@ class descarga_dist_btw_points:
            "distancia_destino_end_point": str(self.data_school[7]), 
             "geojson_text": str(self.data_school[8]) ,
            "json": str(self.data_school[9]) ,
-           "ETC": self.ETC 
+           "ETC": str(self.ETC )
 	
            }, 
           ]
