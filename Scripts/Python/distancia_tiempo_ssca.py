@@ -67,7 +67,7 @@ class descarga_dist_btw_points:
       self.ep = self.gjson.split(',[')[-1].split(']')[0]
       if '[[' in self.ep:
         self.end_point = self.ep.split('[[')[-1]
-        self.geojson = self.gjson.replace('LineString', 'Point')
+        self.geojson = self.gjson.replace('LineString', 'Point').replace('[[', '[').replace(']]', ']')
       else:
         self.end_point = self.gjson.split(',[')[-1].split(']')[0]
         self.geojson = self.gjson
