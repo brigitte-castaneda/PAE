@@ -118,5 +118,5 @@ class descarga_dist_btw_points:
           print("New rows have been added.")
       else:
           print("Encountered errors while inserting rows: {}".format(errors))
-      return [errors] 
+      return errors 
 
