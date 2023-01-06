@@ -60,15 +60,17 @@ class descarga_dist_btw_points:
       self.desti = str(self.to_school_long)+ ',' +  str(self.to_school_lat)
       while True:
         try:
-          self.geojson = '{"type":"LineString",' + self.printer_.split(',"geometry":{')[1].split(',"type":"LineString"}}]')[0] + '}'
+          self.gjson = '{"type":"LineString",' + self.printer_.split(',"geometry":{')[1].split(',"type":"LineString"}}]')[0] + '}'
           break
         except IndexError:
           print('its getting again the geojson')
       self.ep = self.geojson.split(',[')[-1].split(']')[0]
       if '[[' in self.ep:
         self.end_point = self.ep.split('[[')[-1]
+        self.geojson = self.gjson.replace('LineString', 'Point')
       else:
         self.end_point = self.geojson.split(',[')[-1].split(']')[0]
+        self.geojson = self.gjson
 
       # self.end_point = self.geojson.split(',[')[-1].split(']')[0] 
       self.distancia  = self.printer_.split('"properties":{"segments":[{"')[1].split(',"steps":[{')[0].split('distance":')[1].split(',')[0]
