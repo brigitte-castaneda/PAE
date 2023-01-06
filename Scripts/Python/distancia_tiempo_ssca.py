@@ -64,10 +64,18 @@ class descarga_dist_btw_points:
           break
         except IndexError:
           print('its getting again the geojson')
+      self.ep = self.geojson.split(',[')[-1].split(']')[0]
+      if '[[' in self.ep:
+        self.end_point = self.ep.split('[[')[-1]
+      else:
+        self.end_point = self.geojson.split(',[')[-1].split(']')[0]
 
-      self.end_point = self.geojson.split(',[')[-1].split(']')[0] 
+      # self.end_point = self.geojson.split(',[')[-1].split(']')[0] 
       self.distancia  = self.printer_.split('"properties":{"segments":[{"')[1].split(',"steps":[{')[0].split('distance":')[1].split(',')[0]
-      self.duracion = self.printer_.split('"summary":{')[1].split(',"duration":')[1].split('}')[0]
+      try:
+        self.duracion = self.printer_.split('"summary":{')[1].split(',"duration":')[1].split('}')[0]
+      except IndexError:
+        self.duracion = '0'
       
         #  #################
   # 
