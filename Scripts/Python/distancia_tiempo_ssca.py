@@ -120,3 +120,11 @@ class descarga_dist_btw_points:
           print("Encountered errors while inserting rows: {}".format(errors))
       return errors 
 
+# api_key  = key[1]
+# from_school_long, from_school_lat = -74.373649 , 4.334448
+# to_school_long, to_school_lat = -74.390736 , 4.395070
+
+# a = descarga_dist_btw_points(api_key = api_key, id_from= '', 
+# from_school_long = from_school_long, id_to= '', 
+# from_school_lat = from_school_lat , to_school_long=   to_school_long, to_school_lat =  to_school_lat)
+# a.streaming_load_bq()
