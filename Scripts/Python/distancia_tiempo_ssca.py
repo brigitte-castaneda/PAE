@@ -4,7 +4,7 @@ import pyproj
 from math import dist
 import requests
 import warnings
-# warnings.filterwarnings("ignore")
+warnings.filterwarnings("ignore")
 import time
 
 
