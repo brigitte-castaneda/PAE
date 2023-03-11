@@ -7,6 +7,52 @@ import warnings
 warnings.filterwarnings("ignore")
 import time
 
+def consulta_etc_iteracion(etc):
+  SQL  = """ WITH OUTPUT_COSTO_TRANSPORTE AS (SELECT 
+            Cod_ETC,
+            codigo_dane,
+            COD_COL,
+            codigo_dane_sede,
+            cons_sede,
+            tipo_jornada,
+            Divipola_MUNICIPIO ,
+            LATITUD,
+            LONGITUD,
+            GEOMETRY,
+            LATITUD LAT_ORIGEN,
+            LONGITUD 	LONG_ORIGEN	,
+            codigo_dane_sede ID_ORIGEN,
+            Cod_ETC ETC,
+              FROM `ph-jabri.WorldBank.costo_transporte`
+            LEFT JOIN `ph-jabri.WorldBank.sedes_dane`
+            ON  CAST(COD_COL AS INT64) = CAST(codigo_dane_sede AS INT64)
+            ),
+BASE_GEOREF AS (
+  SELECT * FROM (SELECT
+                        CASE WHEN SAFE_CAST(LAT_ORIGEN AS FLOAT64) = 0.0 THEN NULL ELSE SAFE_CAST(LAT_ORIGEN AS FLOAT64) END LAT_ORIGEN,
+                        SAFE_CAST(LONG_ORIGEN AS FLOAT64) LONG_ORIGEN, 
+                        ID_ORIGEN,
+                      ETC
+                      FROM OUTPUT_COSTO_TRANSPORTE
+                      )
+UNION ALL
+ SELECT 
+ SAFE_CAST(LAT_ORIGEN AS FLOAT64) LAT_ORIGEN,
+ SAFE_CAST(LONG_ORIGEN AS FLOAT64) LONG_ORIGEN,
+ ID_ORIGEN, ETC
+  FROM ph-jabri.WorldBank.ETC_center
+),
+BASE AS (SELECT DISTINCT *   FROM BASE_GEOREF WHERE ETC = '{}'),
+ TABLA AS (
+          SELECT 
+          LAT_ORIGEN,	LONG_ORIGEN,	CAST(ID_ORIGEN AS STRING) ID_ORIGEN,	
+          LAT_DEST,	LONG_DEST, CAST(ID_DEST AS STRING)	ID_DEST, ETC	
+          FROM  (SELECT  LAT_ORIGEN  , LONG_ORIGEN , ID_ORIGEN , ETC   FROM BASE  )  A
+          INNER JOIN (SELECT  LAT_ORIGEN LAT_DEST, LONG_ORIGEN LONG_DEST, ID_ORIGEN ID_DEST, ETC ETC_1 FROM BASE) B
+          ON 1 =1
+			)
+SELECT * FROM TABLA WHERE LAT_ORIGEN IS NOT NULL AND LONG_DEST IS NOT NULL
+""".format(etc)
 
 class descarga_dist_btw_points:
   #conductor
