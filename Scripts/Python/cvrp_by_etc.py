@@ -5,7 +5,169 @@ import argparse
 import pandas as pd
 import numpy as np
     
+etc = 41000
+def inicializacion_MAER(etc):
+  
+  sql = """
+  select *   from `ph-jabri.WorldBank.distacias_etc_{}`
+  WHERE ID_ORIGEN  IN (
+    SELECT '0'
+    UNION ALL
+    SELECT codigodanesedeeducativa FROM 
+    `ph-jabri.WorldBank_raw.capacidad_MAER`)
+    AND 
+  ID_DEST  IN (
+    SELECT '0'
+    UNION ALL
+    SELECT codigodanesedeeducativa FROM 
+    `ph-jabri.WorldBank_raw.capacidad_MAER`)
 
+  """
+  df = bq_client.query(sql.format(etc)).to_dataframe() 
+  # df.head(3)
+  columnas = ['ELEVACION_ORIGEN','ELEVACION_DESTINO', 'ELEVATION_GAIN', 'distance', 'duracion_real' , 'distance_real' ]
+  lista = []
+  for i in columnas:
+    df[i] = pd. to_numeric(df[i]) 
+    var_interes =  i
+    temp = df[['ID_ORIGEN','ID_DEST', var_interes ]].pivot_table( values=var_interes, index=['ID_ORIGEN'],
+                      columns=['ID_DEST'], aggfunc=np.sum)
+    escuelas = temp.index.values 
+    temp = temp.to_numpy()
+    lista.append(temp)        
+
+  #Las cargas por semana, estaran dadas por:
+
+  sql_ = """
+  SELECT cod_sede, ifnull(termoking_w{}_ton ,  0 ) termoking_w{}_ton ,
+                    ifnull( furgon_c2_w{}_ton , 0 )  furgon_c2_w{}_ton  ,
+                    ifnull( furgon_c3_w{}_ton , 0 ) furgon_c3_w{}_ton 
+      FROM(
+                SELECT 
+                cod_sede,
+                SUM(termoking_w1_ton) termoking_w1_ton,
+                SUM(furgon_c2_w1_ton) furgon_c2_w1_ton, SUM(furgon_c3_w1_ton) furgon_c3_w1_ton,
+
+--                SUM(termoking_w2_ton) termoking_w2_ton,
+--                SUM(furgon_c2_w2_ton) furgon_c2_w2_ton, SUM(furgon_c3_w2_ton) furgon_c3_w2_ton,
+--                
+--                SUM(termoking_w3_ton) termoking_w3_ton,
+--                SUM(furgon_c2_w3_ton) furgon_c2_w3_ton, SUM(furgon_c3_w3_ton) furgon_c3_w3_ton,
+--                
+--                SUM(termoking_w4_ton) termoking_w4_ton,
+--                SUM(furgon_c2_w4_ton) furgon_c2_w4_ton, SUM(furgon_c3_w4_ton) furgon_c3_w4_ton, 
+                FROM (
+                      SELECT 
+                      codigodanesedeeducativa cod_sede, Cod_ETC ,
+                      p_week_1_class_1_ton as termoking_w1_ton,
+                      p_week_1_class_2_ton  as furgon_c2_w1_ton ,  p_week_1_class_3_ton as furgon_c3_w1_ton,
+
+--                      p_week_2_class_1_ton  as termoking_w2_ton, 
+--                      p_week_2_class_2_ton as furgon_c2_w2_ton,    p_week_2_class_3_ton as furgon_c3_w2_ton , 
+--                      
+--                      p_week_3_class_1_ton  as termoking_w3_ton ,
+--                      p_week_3_class_2_ton as furgon_c2_w3_ton,    p_week_3_class_3_ton as furgon_c3_w3_ton ,
+--                      
+--                      p_week_4_class_1_ton  as termoking_w4_ton,
+--                      p_week_4_class_2_ton as furgon_c2_w4_ton,    p_week_4_class_3_ton as furgon_c3_w4_ton,
+                      
+                      FROM `ph-jabri.WorldBank_raw.capacidad_MAEM`
+
+                )
+  where Cod_ETC = '{}'
+  GROUP BY 1
+  order by 1
+  )"""
+  return [lista, escuelas, sql_ ] 
+
+def inicializacion_MAEM(etc):
+  
+  sql = """
+  select *   from `ph-jabri.WorldBank.distacias_etc_{}`
+  WHERE ID_ORIGEN  IN (
+    SELECT '0'
+    UNION ALL
+    SELECT codigodanesedeeducativa FROM 
+    `ph-jabri.WorldBank_raw.capacidad_MAEM`)
+    AND 
+  ID_DEST  IN (
+    SELECT '0'
+    UNION ALL
+    SELECT codigodanesedeeducativa FROM 
+    `ph-jabri.WorldBank_raw.capacidad_MAEM`)
+
+  """
+  df = bq_client.query(sql.format(etc)).to_dataframe() 
+  # df.head(3)
+  columnas = ['ELEVACION_ORIGEN','ELEVACION_DESTINO', 'ELEVATION_GAIN', 'distance', 'duracion_real' , 'distance_real' ]
+  lista = []
+  for i in columnas:
+    df[i] = pd. to_numeric(df[i]) 
+    var_interes =  i
+    temp = df[['ID_ORIGEN','ID_DEST', var_interes ]].pivot_table( values=var_interes, index=['ID_ORIGEN'],
+                      columns=['ID_DEST'], aggfunc=np.sum)
+    escuelas = temp.index.values 
+    temp = temp.to_numpy()
+    lista.append(temp)        
+
+  #Las cargas por semana, estaran dadas por:
+
+  sql_ = """
+  SELECT cod_sede, ifnull(termoking_w{}_ton ,  0 ) termoking_w{}_ton ,
+                    ifnull( furgon_c2_w{}_ton , 0 )  furgon_c2_w{}_ton  ,
+                    ifnull( furgon_c3_w{}_ton , 0 ) furgon_c3_w{}_ton 
+      FROM(
+                SELECT 
+                cod_sede,
+                SUM(termoking_w1_ton) termoking_w1_ton,
+                SUM(furgon_c2_w1_ton) furgon_c2_w1_ton, SUM(furgon_c3_w1_ton) furgon_c3_w1_ton,
+
+                SUM(termoking_w2_ton) termoking_w2_ton,
+                SUM(furgon_c2_w2_ton) furgon_c2_w2_ton, SUM(furgon_c3_w2_ton) furgon_c3_w2_ton,
+                
+                SUM(termoking_w3_ton) termoking_w3_ton,
+                SUM(furgon_c2_w3_ton) furgon_c2_w3_ton, SUM(furgon_c3_w3_ton) furgon_c3_w3_ton,
+                
+                SUM(termoking_w4_ton) termoking_w4_ton,
+                SUM(furgon_c2_w4_ton) furgon_c2_w4_ton, SUM(furgon_c3_w4_ton) furgon_c3_w4_ton, 
+                FROM (
+                      SELECT 
+                      codigodanesedeeducativa cod_sede, Cod_ETC ,
+                      p_week_1_class_1_ton as termoking_w1_ton,
+                      p_week_1_class_2_ton  as furgon_c2_w1_ton ,  p_week_1_class_3_ton as furgon_c3_w1_ton,
+
+                      p_week_2_class_1_ton  as termoking_w2_ton, 
+                      p_week_2_class_2_ton as furgon_c2_w2_ton,    p_week_2_class_3_ton as furgon_c3_w2_ton , 
+                      
+                      p_week_3_class_1_ton  as termoking_w3_ton ,
+                      p_week_3_class_2_ton as furgon_c2_w3_ton,    p_week_3_class_3_ton as furgon_c3_w3_ton ,
+                      
+                      p_week_4_class_1_ton  as termoking_w4_ton,
+                      p_week_4_class_2_ton as furgon_c2_w4_ton,    p_week_4_class_3_ton as furgon_c3_w4_ton,
+                      
+                      FROM `ph-jabri.WorldBank_raw.capacidad_MAEM`
+
+                )
+  where Cod_ETC = '{}'
+  GROUP BY 1
+  order by 1
+  )"""
+  return [lista, escuelas, sql_ ] 
+
+def optimize_route(df, vehicle_type, week):
+    if vehicle_type =='termoking':
+      demandas = df.loc[df['cod_sede'].isin(escuelas), vehicle_type.replace(' ', '_') + '_w' + str(week) + '_ton'].fillna(0).values
+    else:
+      demandas = df.loc[df['cod_sede'].isin(escuelas), vehicle_type.replace(' ', '_').replace('class_', 'c') + '_w' + str(week) + '_ton'].fillna(0).values
+    
+    Tabla = main()
+    Tabla['total_load'] = Tabla.groupby('vehicle_id')['route_load'].transform('max')
+    Tabla['total_distance'] = Tabla.groupby('vehicle_id')['route_distance'].transform('max')
+    Tabla['total_load_frac'] = np.where(Tabla['total_load'] == 0, np.nan, Tabla['total_load'])
+    Tabla['total_load_frac'] = Tabla['load'] / Tabla['total_load_frac']
+    Tabla['Week'] = week
+    Tabla['Tipo_Unidad'] = vehicle_type
+    return Tabla
 def import_or_install(package):
     try:
         __import__(package)
@@ -21,8 +183,9 @@ def create_data_model():
     """Stores the data for the problem."""
     data = {}
     data['distance_matrix'] = distancia_matriz
-    data['demands'] =  demandas
-    data['vehicle_capacities'] =  [ int(10*0.60)  ] * (int(sum(data['demands'])/int(10*0.60)) ) # 23000 implies 0.60
+    data['demands'] =  demandas #map(lambda v:0 if np.isnan(v) == True else v, demandas )
+ 
+    data['vehicle_capacities'] =  [ int(10*0.70)  ] * (int(sum(data['demands'])/int(10*0.70)) + 1) # 23000 implies 0.60 , 41000 implies 0.7
     data['num_vehicles'] = len(data['vehicle_capacities'] ) 
     data['depot'] = 0
     return data
