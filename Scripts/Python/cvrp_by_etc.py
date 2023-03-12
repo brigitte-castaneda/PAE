@@ -22,7 +22,7 @@ def create_data_model():
     data = {}
     data['distance_matrix'] = distancia_matriz
     data['demands'] =  demandas
-    data['vehicle_capacities'] =  [ int(10*0.40)  ] * (int(sum(data['demands'])/int(10*0.40)) + 1)
+    data['vehicle_capacities'] =  [ int(10*0.60)  ] * (int(sum(data['demands'])/int(10*0.60)) ) # 23000 implies 0.60
     data['num_vehicles'] = len(data['vehicle_capacities'] ) 
     data['depot'] = 0
     return data
@@ -65,29 +65,33 @@ def create_solution_df(data, manager, routing, solution):
     df = pd.DataFrame(columns=["node_index", "vehicle_id", "route_load", "load" , "position", "route_distance", "route_positions"])
     
     for vehicle_id in range(data['num_vehicles']):
-      index = routing.Start(vehicle_id)
-      route_distance = 0
-      route_load = 0
-      route_positions = []
-      while not routing.IsEnd(index):
-          node_index = manager.IndexToNode(index)
-          route_load += data['demands'][node_index]
-          route_positions.append(school[node_index])
-          previous_index = index
-          index = solution.Value(routing.NextVar(index))
-          route_distance += routing.GetArcCostForVehicle(previous_index, index, vehicle_id)
+      # try:
           
-          # Append row to DataFrame
-          df = df.append({
-              "node_index": school[node_index],
-              "vehicle_id": vehicle_id,
-              "route_load": route_load,
-              "load": data['demands'][node_index],
-              "position": len(route_positions) - 1,
-              "route_distance": route_distance,
-              "route_positions": route_positions
-          }, ignore_index=True)
-  
+        index = routing.Start(vehicle_id)
+        route_distance = 0
+        route_load = 0
+        route_positions = []
+        while not routing.IsEnd(index):
+            node_index = manager.IndexToNode(index)
+            route_load += data['demands'][node_index]
+            route_positions.append(school[node_index])
+            previous_index = index
+            index = solution.Value(routing.NextVar(index))
+            route_distance += routing.GetArcCostForVehicle(previous_index, index, vehicle_id)
+            
+            # Append row to DataFrame
+            df = df.append({
+                "node_index": school[node_index],
+                "vehicle_id": vehicle_id,
+                "route_load": route_load,
+                "load": data['demands'][node_index],
+                "position": len(route_positions) - 1,
+                "route_distance": route_distance,
+                "route_positions": route_positions
+            }, ignore_index=True)
+      # except AttributeError:    
+
+
     # print(df) 
     return df
 
@@ -129,7 +133,7 @@ def main():
     demand_callback_index = routing.RegisterUnaryTransitCallback( demand_callback)
     routing.AddDimensionWithVehicleCapacity( 
                                             demand_callback_index,
-                                            0,  # null capacity slack
+                                            2,  # null capacity slack
                                             data['vehicle_capacities'] ,  # vehicle maximum capacities
                                             True,  # start cumul to zero
                                             'Capacity')
@@ -150,3 +154,4 @@ def main():
     if solution:
         print_solution(data, manager, routing, solution)
     return  create_solution_df(data, manager, routing, solution)
+ 
