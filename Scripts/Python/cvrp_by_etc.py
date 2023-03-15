@@ -5,7 +5,8 @@ import argparse
 import pandas as pd
 import numpy as np
     
-etc = 41000
+
+
 def inicializacion_MAER(etc):
   
   sql = """
